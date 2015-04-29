@@ -1,7 +1,6 @@
-Demeter - The SEO Service for AskMe
-===================================
+# Demeter - UI
+==============
 
 Run the following command to install requirements:
 
 ```$ env/bin/pip install -r requirements.txt```
-
