@@ -1,0 +1,41 @@
+{% extends "header.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h7><a href="/">Home</a> &raquo; <a href="/seo/meta">Meta Service</a> &raquo; Add Meta Data</h5>
+
+    <h3>Add Meta Data!</h3><br>
+
+    <form action="{{ url }}" method="post" target="_blank">
+        
+        Ïage Type</label>
+        <select class="form-control" name="page_type">
+        	<option name='url'>url</option>	
+        	<option name='category-city'>category-city</option>	
+        </select><br>
+        
+        URL (Fill it iff You've Chosen 'URL' as Page Type)<input class="form-control" type="text" name="url"><br>
+        
+        Page Param (For non 'URL' Page Type, )<input class="form-control" type="text" name="page_param"><br>
+        
+        H1 Tag<input class="form-control" type="text" name="h1"><br>
+        
+        Meta Title<textarea class="form-control" rows="4" name="meta_title"></textarea><br>
+        
+        Meta Description<textarea class="form-control" rows="4" name="meta_description"></textarea><br>
+        
+        Meta Keywords<textarea class="form-control" rows="4" name="meta_keywords"></textarea><br>
+        
+        OG Tags (This should be a valid json. Validate <a href="http://jsonlint.com/">here</a>)<textarea class="form-control" rows="8" name="og_tags"></textarea><br>
+        
+        Twitter Cards (This should be a valid json. Validate <a href="http://jsonlint.com/">here</a>)<textarea class="form-control" rows="8" name="twitter_cards"></textarea><br>
+        
+        G+ Tags / Micro Data (This should be a valid json. Validate <a href="http://jsonlint.com/">here</a>)<textarea class="form-control" rows="8" name="gplus_tags"></textarea><br>
+        
+        <input class="form-control" type="submit" value="Submit">
+    </form>
+
+</div>
+
+{% endblock %}

@@ -13,28 +13,22 @@ from flask import request
 import requests
 import json
 
-demeter_base_url = "http://localhost:81"
+
+api_base_url = "http://localhost:81"
+
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    name = None
-    form = NameForm()
-    if form.validate_on_submit():
-        name = form.name.data
-        # session.__setattr__('name', form.name.data)
-        # session.__setattr__('known', True)
-        form.name.data = ''
-        # return redirect(url_for('.index'))
-    return render_template('index.html', form=form, name=name)
-    # return render_template('index.html',
-    #                        form=form, name=session.get('name'),
-    #                        known=session.get('known', False),
-    #                        current_time=datetime.utcnow())
+    return render_template('index.html')
 
 
+###################
+# Content Service #
+###################
 @main.route('/seo/content/add_content')
 def add_new_content():
     return render_template('create_content.html', url='add_content/result')
+
 
 @main.route('/seo/content/add_content/result', methods=['GET', 'POST'])
 def add_new_content_result():
@@ -46,15 +40,57 @@ def add_new_content_result():
     }
 
     data = parser.parse(args, request)
-    r = requests.post(demeter_base_url + '/seo/content/add_content', data)
+    r = requests.post(api_base_url + '/seo/content/add_content', data)
 
     message = "Error while adding content for " + data['url'] + ". Review the content and other parameters once, contact admin if that doesn't help!"
-    
+    message_color = "red"
+
     if json.loads(r.text)['result'] and json.loads(r.text)['result'] == 'Success':
         message = "Content for " + data['url'] + " has been added successfully!"
+        message_color = "green"
     
-    return render_template('result.html', message=message)
+    return render_template('result.html', message=message, message_color=message_color)
 
+
+################
+# Meta Service #
+################
+@main.route('/seo/meta/add_meta_data')
+def add_new_meta():
+    return render_template('create_meta.html', url='add_meta_data/result')
+
+
+@main.route('/seo/meta/add_meta_data/result', methods=['GET', 'POST'])
+def add_new_meta_result():
+    args = {
+        'page_type': Arg(str, required=True),
+        'url': Arg(str, default=None),
+        'page_param': Arg(str, default=None),
+        'h1': Arg(str, default=None),
+        'meta_title': Arg(str, default=None),
+        'meta_description': Arg(str, default=None),
+        'meta_keywords': Arg(str, default=None),
+        'og_tags': Arg(str, default='{}'),
+        'twitter_cards': Arg(str, default='{}'),
+        'gplus_tags': Arg(str, default='{}')
+    }
+
+    data = parser.parse(args, request)
+    r = requests.post(api_base_url + '/seo/meta_data/add_meta_data', data)
+
+    message = "Error while adding meta data for " + data['page_type'] + ". Review the content and other parameters once, contact admin if that doesn't help!"
+    message_color = "red"
+
+    if json.loads(r.text)['result'] and json.loads(r.text)['result'] == 'Success':
+        message = "Meta data for " + data['page_type'] + " has been added successfully!"
+        message_color = "green"
+    
+    return render_template('result.html', message=message, message_color=message_color)
+
+
+################
+# Test Service #
+################
 @main.route('/test')
 def test():
     url = 'http://search01.production.askme.com:9999/aggregate/askme/place?agg=city&offset=0&size=200'      
