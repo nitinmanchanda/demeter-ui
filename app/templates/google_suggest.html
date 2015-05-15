@@ -1,0 +1,31 @@
+{% extends "header.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h7><a href="/">Home</a> &raquo; <a href="/seo/keyword">Keyword Service</a> &raquo; Get Google Suggestions</h5>
+
+    <h3>Get Google Suggestions!</h3><br>
+
+    <form method="get">
+        Keyword*</label> <input class="form-control" type="text" name="keyword" required><br>
+        <input class="form-control" type="submit" value="Submit">
+    </form>
+    <br><br>
+
+    {% if data: %}
+     	<table border="1">
+     		<tr>
+     			<th>{{ keyword }}</th>
+     		</tr>
+    		{% for suggested_keyword in data %}
+    			<tr>
+			    	<td>{{ suggested_keyword|e }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+   {% endif %}
+
+</div>
+
+{% endblock %}

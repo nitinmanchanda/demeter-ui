@@ -12,6 +12,7 @@ from webargs.flaskparser import parser
 from flask import request
 import requests
 import json, collections
+import random
 
 
 api_base_url = "http://localhost:81"
@@ -108,6 +109,31 @@ def keywordtool_api():
         result = json.loads(r.text)['results']
         sorted_list = sorted(result)
     return render_template('keyword_data.html', data=result, sorted_list=sorted_list)
+
+
+@main.route('/seo/keyword/google_suggest', methods=['GET', 'POST'])
+def google_suggest_api():
+    google_suggest_domain = [
+        'http://google.com/complete/search',
+        'http://suggestqueries.google.com/complete/search',
+        'http://clients1.google.com/complete/search'
+    ]
+
+    args = {
+        'keyword': Arg(str, default=None)
+    }
+
+    result = None
+    data = parser.parse(args, request)
+    keyword = data['keyword']
+
+    if keyword:
+        domain_picked = random.choice(google_suggest_domain)
+        api = '%s?client=firefox&q=%s&hl=en&gl=in' % (domain_picked, keyword)
+        r = requests.get(api)
+        result = json.loads(r.text)[1]
+
+    return render_template('google_suggest.html', keyword=keyword, data=result)
 
 
 ################
