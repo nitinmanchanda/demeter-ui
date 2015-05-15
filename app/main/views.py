@@ -11,7 +11,7 @@ from webargs.core import Arg
 from webargs.flaskparser import parser
 from flask import request
 import requests
-import json
+import json, collections
 
 
 api_base_url = "http://localhost:81"
@@ -86,6 +86,28 @@ def add_new_meta_result():
         message_color = "green"
     
     return render_template('result.html', message=message, message_color=message_color)
+
+
+###################
+# Keyword Service #
+###################
+@main.route('/seo/keyword/keywordtool', methods=['GET', 'POST'])
+def keywordtool_api():
+    apikey = '579a5b85df0459956f0be0875d99083fc0740958'
+
+    args = {
+        'keyword': Arg(str, default=None)
+    }
+
+    result = None
+    sorted_list = None
+    data = parser.parse(args, request)
+    if data['keyword']:
+        api = 'http://api.keywordtool.io/v1/search/google?apikey=%s&country=in&language=en&metrics=true&keyword=%s' % (apikey, data['keyword'])
+        r = requests.post(api)
+        result = json.loads(r.text)['results']
+        sorted_list = sorted(result)
+    return render_template('keyword_data.html', data=result, sorted_list=sorted_list)
 
 
 ################
