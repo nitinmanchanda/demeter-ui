@@ -9,10 +9,21 @@
 
     <form action="{{ url }}" method="post" target="_blank">
         
-        Ïage Type</label>
+        Page Type</label>
         <select class="form-control" name="page_type">
-        	<option name='url'>url</option>	
-        	<option name='category-city'>category-city</option>	
+            <option name='url'>URL</option>
+            <option name='ads-city'>Ads City</option>
+            <option name='ads-city-category'>Ads City Category</option>
+            <option name='ads-details'>Ads Details</option>
+            <option name='deals-city'>Deals City</option>
+            <option name='deals-city-category'>Deals City Category</option>
+            <option name='deals-details'>Deals Details</option>
+            <option name='category-city'>Category City</option>
+        	<option name='category-location'>Category Location</option>
+            <option name='sub-category-city'>Sub Category City</option>
+            <option name='sub-category-location'>Sub Category Location</option>
+            <option name='business-listing'>Business Listing</option>   
+        	<option name='search'>Search</option>	
         </select><br>
         
         URL (Fill it iff You've Chosen 'URL' as Page Type)<input class="form-control" type="text" name="url"><br>
