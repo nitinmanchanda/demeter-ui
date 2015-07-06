@@ -77,6 +77,7 @@ def add_new_meta_result():
     }
 
     data = parser.parse(args, request)
+
     r = requests.post(api_base_url + '/seo/meta_data/add_meta_data', data)
 
     message = "Error while adding meta data for " + data['page_type'] + ". Review the content and other parameters once, contact admin if that doesn't help!"
@@ -136,12 +137,137 @@ def google_suggest_api():
     return render_template('google_suggest.html', keyword=keyword, data=result)
 
 
+##################
+# Mapper Service #
+##################
+@main.route('/seo/mapper/create_custom_landing_page')
+def create_custom_landing_page():
+    return render_template('create_custom_landing_page.html', url='create_custom_landing_page/result')
+
+
+@main.route('/seo/mapper/create_custom_landing_page/result', methods=['GET', 'POST'])
+def create_custom_landing_page_result():
+    args = {
+        'url': Arg(str, required=True),
+        'existing_url': Arg(str, required=True),
+        'h1': Arg(str, default=None),
+        'meta_title': Arg(str, default=None),
+        'meta_description': Arg(str, default=None),
+        'meta_keywords': Arg(str, default=None),
+        'content': Arg(str, default=None)
+    }
+
+    data = parser.parse(args, request)
+    data['page_type'] = 'url'
+    existing_url = data['existing_url']
+    existing_page_type = 'category'
+    area_available = False
+
+    if "http://www.askme.com" in existing_url:
+        existing_url = existing_url.replace("http://www.askme.com", "")
+
+    if "/search/" in existing_url:
+        existing_page_type = 'search'
+        existing_url = existing_url.replace("/search", "")
+
+    if "/in/" in existing_url:
+        area_available = True
+        existing_url = existing_url.replace("/in", "")        
+
+    uri_values = existing_url.split("/")
+    data['city'] = uri_values[1]    
+    if existing_page_type == 'search':
+        data['search_query'] = uri_values[2]
+    else:
+        data['category'] = uri_values[2]
+
+    if area_available:
+        data['location'] = uri_values[3]
+
+    mapper_processed = False
+    meta_processed = False
+    content_processed = False
+
+    api_request = requests.post(api_base_url + '/seo/mapper/add_url_data', data)
+    if json.loads(api_request.text)['result'] and json.loads(api_request.text)['result'] == 'Success':
+        mapper_processed = True
+
+    if data['content'] is not "":
+        api_request = requests.post(api_base_url + '/seo/content/add_content', data)
+        if json.loads(api_request.text)['result'] and json.loads(api_request.text)['result'] == 'Success':
+            content_processed = True
+    else:
+        content_processed = True
+
+    if data['h1'] is not "" and data['meta_title'] is not "" and data['meta_description'] is not "" and data['meta_keywords'] is not "":
+        api_request = requests.post(api_base_url + '/seo/meta_data/add_meta_data', data)
+        if json.loads(api_request.text)['result'] and json.loads(api_request.text)['result'] == 'Success':
+            meta_processed = True
+    else:
+        meta_processed = True
+
+    message = "Error while adding data for " + data['url'] + ". Review the content and other parameters once, contact admin if that doesn't help!"
+    message_color = "red"
+
+    if mapper_processed and meta_processed and content_processed:
+        message = "Data for " + data['url'] + " has been added successfully!"
+        message_color = "green"
+    
+    return render_template('result.html', message=message, message_color=message_color)
+
+
+#################
+# Redis Service #
+#################
+@main.route('/seo/redis/meta_data')
+def meta_data_redis_push():
+    r = requests.get(api_base_url + '/seo/meta_data/reload_cache')
+
+    message = "Not able to push meta service data to redis!"
+    message_color = "red"
+
+    if json.loads(r.text)['result'] and json.loads(r.text)['result'] == 'Success':
+        message = "Meta service data has been pushed to redis successfully!"
+        message_color = "green"
+    
+    return render_template('result.html', message=message, message_color=message_color)
+
+
+@main.route('/seo/redis/content_data')
+def content_data_redis_push():
+    r = requests.get(api_base_url + '/seo/content/reload_cache')
+
+    message = "Not able to push content service data to redis!"
+    message_color = "red"
+
+    if json.loads(r.text)['result'] and json.loads(r.text)['result'] == 'Success':
+        message = "Content service data has been pushed to redis successfully!"
+        message_color = "green"
+    
+    return render_template('result.html', message=message, message_color=message_color)
+
+
+@main.route('/seo/redis/mapper_data')
+def mapper_data_redis_push():
+    r = requests.get(api_base_url + '/seo/mapper/reload_cache')
+
+    message = "Not able to push mapper service data to redis!"
+    message_color = "red"
+
+    if json.loads(r.text)['result'] and json.loads(r.text)['result'] == 'Success':
+        message = "Mapper service data has been pushed to redis successfully!"
+        message_color = "green"
+    
+    return render_template('result.html', message=message, message_color=message_color)
+
+
 ################
 # Test Service #
 ################
 @main.route('/test')
 def test():
-    url = 'http://search01.production.askme.com:9999/aggregate/askme/place?agg=city&offset=0&size=200'      
+    # url = 'http://search01.production.askme.com:9999/aggregate/askme/place?agg=city&offset=0&size=200'      
+    url = 'http://search01.production.askme.com:9999/aggregate/askme/place?agg=city&offset=0'      
     resp = urllib2.urlopen(url)
 
     my_data = json.load(resp)

@@ -1,0 +1,35 @@
+{% extends "header.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h7><a href="/">Home</a> &raquo; <a href="/seo/mapper">Mapper Service</a> &raquo; Create Custom Landing Page</h5>
+
+    <h3>Create Custom Landing Page!</h3><br>
+
+    <form action="{{ url }}" method="post" target="_blank">
+        
+        Custom URL*<input class="form-control" type="text" name="url" placeholder='/my-custom-url' required><br>
+        
+        Existing URL* (<b>Currently Supporting:</b> /city/search/search-term <b>OR</b> /city/search/search-term/in/area <b>OR</b> /city/category <b>OR</b> /city/category/in/area)
+        <input class="form-control" type="text" name="existing_url" placeholder='/city/search/search-term/in/area' required><br>
+        
+        <legend class="form-control"><b>Note:</b> Please "do not" use any generic template here. This data is one-to-one mapped with mentioned custom URL. Hence, it'll be shown as it is.</legend>
+        
+        H1 Tag*<input class="form-control" type="text" name="h1" required><br>
+        
+        Meta Title*<textarea class="form-control" rows="4" name="meta_title" required></textarea><br>
+        
+        Meta Description*<textarea class="form-control" rows="4" name="meta_description" required></textarea><br>
+        
+        Meta Keywords*<textarea class="form-control" rows="4" name="meta_keywords" required></textarea><br>
+        
+        Content (Use <a href='http://www.textfixer.com/html/convert-text-html.php' target='_blank'>this</a> to convert your text to HTML. <b>Note</b>: Use line break tags only!)<textarea class="form-control" rows="8" name="content"></textarea>
+        Wondering how your content will look like? Check it <a href='http://scratchpad.io/' target='_blank'>here</a>.<br><br>
+        
+        <input class="form-control" type="submit" value="Submit">
+    </form>
+
+</div>
+
+{% endblock %}
